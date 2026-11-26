@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyBuddy — Student Learning Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 9999px;
+    }
+    /* Rich AI Tutor Markdown Styling */
+    .lesson-markdown h1, .lesson-markdown h2 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-top: 1.5rem;
+      margin-bottom: 0.6rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid rgba(99, 102, 241, 0.25);
+      color: #4f46e5;
+    }
+    .dark .lesson-markdown h1, .dark .lesson-markdown h2 {
+      color: #818cf8;
+    }
+    .lesson-markdown h3 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      margin-top: 1.15rem;
+      margin-bottom: 0.4rem;
+      color: #0f172a;
+    }
+    .dark .lesson-markdown h3 {
+      color: #f1f5f9;
+    }
+    .lesson-markdown p {
+      margin-bottom: 0.75rem;
+      line-height: 1.7;
+    }
+    .lesson-markdown ul, .lesson-markdown ol {
+      margin-left: 1.35rem;
+      margin-bottom: 0.85rem;
+      line-height: 1.65;
+    }
+    .lesson-markdown ul {
+      list-style-type: disc;
+    }
+    .lesson-markdown ol {
+      list-style-type: decimal;
+    }
+    .lesson-markdown li {
+      margin-bottom: 0.35rem;
+    }
+    .lesson-markdown code {
+      background: rgba(99, 102, 241, 0.12);
+      color: #4338ca;
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.375rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88em;
+      font-weight: 600;
+    }
+    .dark .lesson-markdown code {
+      background: rgba(129, 140, 248, 0.18);
+      color: #a5b4fc;
+    }
+    .formula-box {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(14, 165, 233, 0.08));
+      border-left: 4px solid #4f46e5;
+      padding: 0.85rem 1rem;
+      border-radius: 0.75rem;
+      margin: 0.75rem 0;
+    }
+    .dark .formula-box {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.16), rgba(14, 165, 233, 0.12));
+      border-left-color: #818cf8;
+    }
+    .lesson-markdown table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+    }
+    .lesson-markdown th, .lesson-markdown td {
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+    }
+    .lesson-markdown th {
+      background: rgba(99, 102, 241, 0.1);
+      font-weight: 700;
+    }
+    @keyframes floatBuddy {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+    .buddy-float {
+      animation: floatBuddy 3s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+  <!-- 2-Day Approaching Exam Alert Banner -->
+  <div id="exam-alert-banner" class="hidden bg-amber-500 text-white px-4 py-2.5 text-sm font-medium shadow-md z-40">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span>⏰</span>
+        <span id="exam-alert-text" class="font-semibold">Upcoming exam alert!</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="switchTab('exams')" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-xs font-bold transition">Open Syllabus</button>
+        <button onclick="document.getElementById('exam-alert-banner').classList.add('hidden')" class="px-1.5 text-lg leading-none">&times;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Shell -->
+  <div class="flex-1 flex flex-col lg:flex-row min-h-screen">
+
+    <!-- LEFT SIDEBAR (Exact StudyBuddy Structure) -->
+    <aside class="hidden lg:flex lg:flex-col lg:w-64 lg:shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-5 justify-between sticky top-0 h-screen">
+      <div class="space-y-6">
+        <!-- Brand Header -->
+        <div class="space-y-3">
+          <div>
+            <div class="text-xl font-extrabold tracking-tight text-indigo-600 dark:text-indigo-400">✦ StudyBuddy</div>
+            <div class="text-[10px] font-bold tracking-widest uppercase text-slate-400 mt-0.5">YOUR PERSONAL LEARNING HUB</div>
+          </div>
+          <button onclick="toggleDarkMode()" id="sidebar-dark-btn" class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-semibold transition">
+            🌙 Dark mode
+          </button>
+        </div>
+
+        <!-- WORKSPACE SECTION -->
+        <div>
+          <div class="px-3 mb-2 text-[10px] font-extrabold tracking-widest uppercase text-slate-400">WORKSPACE</div>
+          <nav class="space-y-1">
+            <button data-tab="dashboard" onclick="switchTab('dashboard')" class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition">
+              <span>🏠</span> Dashboard
+            </button>
+            <button data-tab="tutor" onclick="switchTab('tutor')" class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition">
+              <span>🤖</span> AI Tutor
+            </button>
+            <button data-tab="exams" onclick="switchTab('exams')" class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition">
+              <span>📚</span> Exam & Syllabus
+            </button>
+            <button data-tab="timer" onclick="switchTab('timer')" class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition">
+              <span>⏱️</span> Focus Timer
+            </button>
+            <button data-tab="notes" onclick="switchTab('notes')" class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition">
+              <span>📝</span> My Notes
+            </button>
+          </nav>
+        </div>
+
+        <!-- YOUR GROWTH SECTION -->
+        <div>
+          <div class="px-3 mb-2 text-[10px] font-extrabold tracking-widest uppercase text-slate-400">YOUR GROWTH</div>
+          <nav class="space-y-1">
+            <button data-tab="progress" onclick="switchTab('progress')" class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition">
+              <span>📈</span> Progress & XP
+            </button>
+            <button data-tab="settings" onclick="switchTab('settings')" class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition">
+              <span>⚙️</span> Settings
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Mini XP Footer -->
+      <div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+        <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/70 flex items-center gap-3">
+          <span id="sidebar-pet-icon" class="text-2xl">🐣</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between text-xs font-bold">
+              <span id="sidebar-lvl">Level 1</span>
+              <span id="sidebar-xp" class="text-indigo-600 dark:text-indigo-400">0 XP</span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-1.5 overflow-hidden">
+              <div id="sidebar-xp-bar" class="bg-indigo-600 h-full rounded-full transition-all" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MOBILE HEADER -->
+    <header class="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+      <div>
+        <div class="text-base font-extrabold text-indigo-600 dark:text-indigo-400 leading-tight">✦ StudyBuddy</div>
+        <div class="text-[9px] font-bold tracking-widest uppercase text-slate-400">YOUR PERSONAL LEARNING HUB</div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="toggleDarkMode()" id="mobile-dark-btn" class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold">
+          🌙 Dark mode
+        </button>
+        <button onclick="switchTab('settings')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm" aria-label="Settings">⚙️</button>
+      </div>
+    </header>
+
+    <!-- MAIN WORKSPACE CONTENT -->
+    <main class="flex-1 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-10 max-w-6xl w-full mx-auto">
+
+      <!-- ==================== 1. DASHBOARD ==================== -->
+      <section id="tab-dashboard" class="tab-section space-y-6">
+        <div>
+          <div class="text-xs font-extrabold tracking-widest uppercase text-indigo-600 dark:text-indigo-400">YOUR LEARNING SPACE</div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">Good day, learner! 👋</h1>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Small steps every day lead to big results. What will you learn today?</p>
+        </div>
+
+        <!-- HOME SCREEN APP CARD (Auto-hidden when installed) -->
+        <div id="dashboard-install-card" class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-5 rounded-2xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div class="text-[10px] font-extrabold tracking-widest uppercase text-indigo-200">HOME SCREEN APP</div>
+            <h2 class="text-base sm:text-lg font-bold mt-0.5">Install StudyBuddy on your device</h2>
+            <p class="text-xs text-indigo-100 mt-0.5">Launch instantly like a native app and keep your study tools one tap away.</p>
+          </div>
+          <div class="flex items-center gap-2.5 shrink-0">
+            <button onclick="openInstallModal()" class="bg-white text-indigo-700 hover:bg-indigo-50 font-bold px-4 py-2 rounded-xl text-xs shadow-sm transition">
+              📲 Install App
+            </button>
+            <button onclick="markAppInstalled()" class="bg-indigo-700/80 hover:bg-indigo-800 text-white font-semibold px-3.5 py-2 rounded-xl text-xs border border-indigo-400/30 transition">
+              ✓ Already Installed
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 STAT CARDS -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span>⏳</span> Focus time today</div>
+            <div class="text-2xl sm:text-3xl font-extrabold mt-2"><span id="dash-focus-today">0</span> <span class="text-xs font-medium text-slate-400">min</span></div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span>⭐</span> Total XP earned</div>
+            <div class="text-2xl sm:text-3xl font-extrabold mt-2 text-indigo-600 dark:text-indigo-400"><span id="dash-total-xp">0</span> <span class="text-xs font-medium text-slate-400">XP</span></div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span>🔥</span> Study day streak</div>
+            <div class="text-2xl sm:text-3xl font-extrabold mt-2 text-amber-500"><span id="dash-streak">1</span> <span class="text-xs font-medium text-slate-400">days</span></div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span>📚</span> Chapters completed</div>
+            <div class="text-2xl sm:text-3xl font-extrabold mt-2 text-emerald-600 dark:text-emerald-400"><span id="dash-chapters-done">0</span><span id="dash-chapters-total" class="text-sm font-medium text-slate-400">/0</span></div>
+          </div>
+        </div>
+
+        <!-- MIDDLE GRID: SYLLABUS PROGRESS + DAILY CHALLENGE -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+          <!-- Syllabus Progress Card -->
+          <div class="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="font-bold text-base">Syllabus progress</h2>
+              <button onclick="switchTab('exams')" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Open syllabus →</button>
+            </div>
+            <div id="dash-syllabus-summary" class="space-y-3">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Daily Challenge Card -->
+          <div class="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <h2 class="font-bold text-base">🎯 Complete a focus session <span class="text-indigo-600 dark:text-indigo-400">+25 XP</span></h2>
+                <span id="dash-challenge-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">In progress</span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Finish at least 1 focus session today to earn bonus XP and keep your streak alive.</p>
+              <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full mt-4 overflow-hidden">
+                <div id="dash-challenge-bar" class="bg-indigo-600 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+            <div>
+              <button onclick="switchTab('timer')" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-sm transition">
+                Start a focus session
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTTOM GRID: QUICK LAUNCH + YOUR STUDY BUDDY -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+          <!-- Quick Launch Card -->
+          <div class="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <h2 class="font-bold text-base">Quick launch</h2>
+            <div class="grid grid-cols-3 gap-3">
+              <button onclick="switchTab('tutor')" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-2 transition">
+                <span class="text-2xl">🤖</span>
+                <span class="text-xs font-bold">AI Tutor</span>
+              </button>
+              <button onclick="switchTab('exams')" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-2 transition">
+                <span class="text-2xl">📚</span>
+                <span class="text-xs font-bold">Syllabus</span>
+              </button>
+              <button onclick="switchTab('notes')" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 border border-slate-200 dark:border-slate-700 flex flex-col items-center gap-2 transition">
+                <span class="text-2xl">📝</span>
+                <span class="text-xs font-bold">Notes</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Your Study Buddy Card -->
+          <div class="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between gap-4">
+            <div class="space-y-2 flex-1">
+              <h2 class="font-bold text-base">Your study buddy</h2>
+              <div id="dash-buddy-title" class="text-sm font-extrabold text-indigo-600 dark:text-indigo-400">🐣 Level 1 — Beginner</div>
+              <p id="dash-buddy-sub" class="text-xs text-slate-500 dark:text-slate-400">0 / 100 XP to evolve your companion</p>
+              <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div id="dash-buddy-bar" class="bg-emerald-500 h-full rounded-full transition-all" style="width: 0%"></div>
+              </div>
+            </div>
+            <div id="dash-buddy-emoji" class="text-5xl buddy-float select-none shrink-0">🐣</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== 2. AI TUTOR (EXACT FORMAT + UPGRADED FULL CHAPTER ENGINE + FOLLOW-UP) ==================== -->
+      <section id="tab-tutor" class="tab-section hidden space-y-6">
+        <div>
+          <div class="text-xs font-extrabold tracking-widest uppercase text-indigo-600 dark:text-indigo-400">PERSONAL LEARNING ASSISTANT</div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">AI Tutor 🤖</h1>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Enter your class, subject and topic. Choose an explanation or a worksheet.</p>
+        </div>
+
+        <!-- Build your learning material Card -->
+        <div class="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+          <div>
+            <h2 class="text-lg font-extrabold">Build your learning material</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Customise the lesson to match what you're studying.</p>
+          </div>
+
+          <!-- CLASS / GRADE Buttons -->
+          <div>
+            <label class="block text-[11px] font-extrabold tracking-wider uppercase text-slate-500 dark:text-slate-400 mb-2">CLASS / GRADE</label>
+            <div id="grade-buttons-grid" class="flex flex-wrap gap-2">
+              <!-- Populated by JS: Class 1..12, College -->
+            </div>
+          </div>
+
+          <!-- SUBJECT Buttons -->
+          <div>
+            <label class="block text-[11px] font-extrabold tracking-wider uppercase text-slate-500 dark:text-slate-400 mb-2">SUBJECT</label>
+            <div id="subject-buttons-grid" class="flex flex-wrap gap-2">
+              <!-- Populated by JS: Science, Mathematics, etc. -->
+            </div>
+          </div>
+
+          <!-- TOPIC YOU WANT TO STUDY -->
+          <div>
+            <label for="tutor-topic-input" class="block text-[11px] font-extrabold tracking-wider uppercase text-slate-500 dark:text-slate-400 mb-2">TOPIC YOU WANT TO STUDY</label>
+            <input id="tutor-topic-input" type="text" placeholder="Enter chapter name or topic (e.g., Light - Reflection and Refraction, Quadratic Equations)..." class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
+
+          <!-- CHOOSE YOUR MODE + DIFFICULTY -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[11px] font-extrabold tracking-wider uppercase text-slate-500 dark:text-slate-400 mb-2">CHOOSE YOUR MODE</label>
+              <div class="grid grid-cols-2 gap-2.5">
+                <button type="button" id="mode-btn-explanation" onclick="selectTutorMode('explanation')" class="p-3 rounded-xl border-2 text-left transition">
+                  <div class="text-sm font-bold">📖 Explanation</div>
+                  <div class="text-[11px] opacity-80 mt-0.5">Learn step by step</div>
+                </button>
+                <button type="button" id="mode-btn-worksheet" onclick="selectTutorMode('worksheet')" class="p-3 rounded-xl border-2 text-left transition">
+                  <div class="text-sm font-bold">📝 Worksheet</div>
+                  <div class="text-[11px] opacity-80 mt-0.5">Practise questions</div>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-extrabold tracking-wider uppercase text-slate-500 dark:text-slate-400 mb-2">DIFFICULTY</label>
+              <div class="grid grid-cols-3 gap-2.5">
+                <button type="button" id="diff-btn-Easy" onclick="selectTutorDifficulty('Easy')" class="py-3 px-3 rounded-xl border-2 text-xs font-bold text-center transition">Easy</button>
+                <button type="button" id="diff-btn-Medium" onclick="selectTutorDifficulty('Medium')" class="py-3 px-3 rounded-xl border-2 text-xs font-bold text-center transition">Medium</button>
+                <button type="button" id="diff-btn-Hard" onclick="selectTutorDifficulty('Hard')" class="py-3 px-3 rounded-xl border-2 text-xs font-bold text-center transition">Hard</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Generate Button -->
+          <div>
+            <button id="generate-tutor-btn" onclick="generateStudyMaterial()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl text-sm shadow-sm transition flex items-center justify-center gap-2">
+              ✨ Generate study material
+            </button>
+          </div>
+        </div>
+
+        <!-- Output Area ("Your lesson appears here") -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+          <div class="px-5 sm:px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-50/70 dark:bg-slate-800/40">
+            <div>
+              <h3 id="lesson-output-header" class="font-bold text-sm sm:text-base">Your lesson appears here</h3>
+              <p id="lesson-output-meta" class="text-xs text-slate-500 dark:text-slate-400">Select your class, subject, and chapter above to get a complete explanation of all headings & formulas.</p>
+            </div>
+            <div id="lesson-action-btns" class="hidden flex items-center gap-2">
+              <button onclick="saveLessonToNotes()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">
+                📝 Save Lesson to Notes
+              </button>
+              <button onclick="copyLessonToClipboard()" class="px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold transition">
+                📋 Copy
+              </button>
+            </div>
+          </div>
+
+          <!-- Lesson Content Body -->
+          <div id="lesson-content-area" class="p-5 sm:p-7 lesson-markdown text-sm sm:text-base text-slate-700 dark:text-slate-200">
+            <div class="py-8 text-center text-slate-400 dark:text-slate-500 space-y-2">
+              <div class="text-3xl">📖</div>
+              <p class="text-sm font-medium">Enter a chapter name and click <strong>✨ Generate study material</strong> to read the full chapter explanation with all headings and formulas.</p>
+            </div>
+          </div>
+
+          <!-- FOLLOW-BACK / CROSS-QUESTIONING SECTION (Shown inside the same card once lesson is generated) -->
+          <div id="tutor-followup-section" class="hidden border-t-2 border-indigo-100 dark:border-indigo-900/60 bg-indigo-50/40 dark:bg-slate-800/40 p-5 sm:p-6 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h4 class="font-extrabold text-sm sm:text-base text-indigo-950 dark:text-indigo-200">💬 Ask a Follow-Up Question / Clear Your Doubts</h4>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">Didn't understand a heading or formula? Ask any cross-question or request help with more topics from this chapter.</p>
+              </div>
+              <button onclick="resetFollowUpThread()" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">Clear chat</button>
+            </div>
+
+            <!-- Helpful Quick Cross-Question Prompts -->
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="askQuickFollowUp('Explain all the formulas from this chapter again in simpler terms with step-by-step numerical examples.')" class="text-xs font-semibold px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 transition">
+                🧮 Explain formulas with numerical examples
+              </button>
+              <button type="button" onclick="askQuickFollowUp('I did not understand the main headings clearly. Explain them again in very simple language with real-life examples.')" class="text-xs font-semibold px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 transition">
+                💡 Explain headings in simpler words
+              </button>
+              <button type="button" onclick="askQuickFollowUp('Teach any remaining subtopics, derivations, sign conventions, or important exam questions from this chapter.')" class="text-xs font-semibold px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 transition">
+                📚 Cover more subtopics & derivations
+              </button>
+            </div>
+
+            <!-- Conversation Thread -->
+            <div id="followup-chat-thread" class="space-y-3 max-h-[460px] overflow-y-auto pr-1"></div>
+
+            <!-- Cross-Question Input Form -->
+            <form onsubmit="submitFollowUpQuestion(event)" class="flex flex-col sm:flex-row gap-2.5 pt-1">
+              <input id="followup-question-input" type="text" placeholder="Type your doubt or cross-question here (e.g., 'Why is there a minus sign in formula 2?' or 'Explain subtopic 3')..." class="flex-1 px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required />
+              <button id="followup-submit-btn" type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-3 rounded-xl text-sm shadow-sm transition shrink-0">
+                Ask Follow-Up →
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== 3. EXAM & SYLLABUS ==================== -->
+      <section id="tab-exams" class="tab-section hidden space-y-6">
+        <div>
+          <div class="text-xs font-extrabold tracking-widest uppercase text-indigo-600 dark:text-indigo-400">SYLLABUS, EXAMS & REVISION TESTS</div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">Exam & Syllabus 📚</h1>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Track your chapters, attach timetable photos, and take timed revision tests.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Add Subject Syllabus & Exam Schedule Card -->
+          <div class="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <h2 class="font-bold text-base">Add Subject Syllabus & Exam Schedule</h2>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Subject</label>
+              <input id="exam-subject" type="text" placeholder="e.g., Science / Physics" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Exam Date</label>
+              <input id="exam-date" type="date" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Testing Syllabus Chapters (one per line or comma-separated)</label>
+              <textarea id="exam-chapters" rows="4" placeholder="Light - Reflection and Refraction&#10;Human Eye and Colourful World&#10;Electricity" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+            </div>
+
+            <!-- Photo Attachment Buttons -->
+            <div class="space-y-2">
+              <div class="flex flex-wrap gap-2">
+                <label class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold cursor-pointer transition">
+                  📷 Click Photo
+                  <input type="file" accept="image/*" capture="environment" onchange="handleExamPhotoSelect(event)" class="hidden" />
+                </label>
+                <label class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold cursor-pointer transition">
+                  🖼️ Upload Photo
+                  <input type="file" accept="image/*" onchange="handleExamPhotoSelect(event)" class="hidden" />
+                </label>
+                <button type="button" id="remove-photo-btn" onclick="clearPendingExamPhoto()" class="hidden px-3.5 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 text-xs font-bold">
+                  ✕ Remove Photo
+                </button>
+              </div>
+              <div id="pending-photo-preview" class="hidden">
+                <img id="pending-photo-img" src="" alt="Preview" class="max-h-32 rounded-xl border border-slate-200 dark:border-slate-700" />
+              </div>
+            </div>
+
+            <button onclick="saveSubjectSyllabus()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-sm shadow-sm transition">
+              💾 Save Subject Syllabus
+            </button>
+          </div>
+
+          <!-- Day-Before Exam Mock Test Card -->
+          <div class="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <h2 class="font-bold text-base">Day-Before Exam Mock Test</h2>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Choose Subject</label>
+              <select id="mock-subject-select" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-medium outline-none"></select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Chapters to Include</label>
+              <select id="mock-filter-select" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-medium outline-none">
+                <option value="all">Full subject syllabus</option>
+                <option value="completed">Only completed chapters</option>
+                <option value="remaining">Only remaining chapters</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Set Test Time</label>
+              <div class="grid grid-cols-4 gap-2">
+                <button type="button" onclick="selectMockDuration(5)" id="mock-time-5" class="mock-time-btn py-2 rounded-xl border text-xs font-bold">5 min</button>
+                <button type="button" onclick="selectMockDuration(10)" id="mock-time-10" class="mock-time-btn py-2 rounded-xl border text-xs font-bold">10 min</button>
+                <button type="button" onclick="selectMockDuration(20)" id="mock-time-20" class="mock-time-btn py-2 rounded-xl border text-xs font-bold">20 min</button>
+                <button type="button" onclick="selectMockDuration(30)" id="mock-time-30" class="mock-time-btn py-2 rounded-xl border text-xs font-bold">30 min</button>
+              </div>
+            </div>
+            <button id="start-mock-test-btn" onclick="startTimedMockTest()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl text-sm shadow-sm transition">
+              📝 Start Timed Exam Test
+            </button>
+          </div>
+        </div>
+
+        <!-- Active Timed Exam Test Container -->
+        <div id="mock-test-container" class="hidden bg-white dark:bg-slate-900 p-6 rounded-2xl border-2 border-amber-400 shadow-md space-y-5">
+          <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div>
+              <h3 id="mock-test-heading" class="font-extrabold text-base">Timed Revision Test</h3>
+              <p class="text-xs text-slate-500">Select the best answer for each question.</p>
+            </div>
+            <div id="mock-countdown" class="font-mono font-extrabold text-lg px-3.5 py-1.5 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200">10:00</div>
+          </div>
+          <div id="mock-questions-list" class="space-y-4"></div>
+          <div class="flex justify-end gap-2.5">
+            <button onclick="closeMockTest()" class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-bold">Cancel</button>
+            <button onclick="gradeMockTest()" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">Submit Test</button>
+          </div>
+        </div>
+
+        <!-- Your Course & Exam Progress Card -->
+        <div class="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="font-bold text-base">Your Course & Exam Progress</h2>
+            <span id="overall-syllabus-xp" class="text-xs font-bold text-indigo-600 dark:text-indigo-400">0% Complete</span>
+          </div>
+          <div id="course-progress-list" class="space-y-4">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== 4. FOCUS TIMER ==================== -->
+      <section id="tab-timer" class="tab-section hidden space-y-6">
+        <div>
+          <div class="text-xs font-extrabold tracking-widest uppercase text-indigo-600 dark:text-indigo-400">FOCUS MODE</div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">Focus Timer ⏱️</h1>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Stay locked in on one chapter or topic at a time and earn +25 XP per session.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Focus Session Card -->
+          <div class="lg:col-span-2 bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center space-y-6">
+            <div class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400" id="focus-session-label">Focus Session</div>
+            <div id="focus-timer-clock" class="text-6xl sm:text-7xl font-black font-mono tracking-tight">25:00</div>
+
+            <!-- Custom Minutes Input + Set Timer -->
+            <div class="flex items-center justify-center gap-2 max-w-xs mx-auto">
+              <input id="custom-timer-mins" type="number" min="1" max="180" placeholder="Minutes" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-center outline-none" />
+              <button onclick="setCustomTimerMinutes()" class="px-4 py-2 rounded-xl bg-slate-800 dark:bg-slate-700 text-white text-xs font-bold shrink-0">Set Timer</button>
+            </div>
+
+            <!-- Start & Reset -->
+            <div class="flex items-center justify-center gap-3">
+              <button id="focus-start-btn" onclick="toggleFocusTimer()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-7 py-3 rounded-xl text-sm shadow-sm transition">
+                ▶ Start
+              </button>
+              <button onclick="resetFocusTimer()" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold px-5 py-3 rounded-xl text-sm transition">
+                ↺ Reset
+              </button>
+            </div>
+
+            <!-- Presets -->
+            <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap justify-center gap-2">
+              <button onclick="applyTimerPreset(15, 'Focus Session')" class="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-xs font-bold">15 min focus</button>
+              <button onclick="applyTimerPreset(25, 'Focus Session')" class="px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">25 min focus</button>
+              <button onclick="applyTimerPreset(45, 'Focus Session')" class="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-xs font-bold">45 min focus</button>
+              <button onclick="applyTimerPreset(5, 'Break')" class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-xs font-bold">5 min break</button>
+              <button onclick="applyTimerPreset(15, 'Break')" class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-xs font-bold">15 min break</button>
+            </div>
+          </div>
+
+          <!-- Today's Focus Summary Card -->
+          <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 h-fit">
+            <h2 class="font-bold text-base">Today's focus summary</h2>
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 space-y-1">
+              <div class="text-xs text-slate-500">Focused today</div>
+              <div class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400"><span id="summary-focus-today">0</span> min</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 space-y-1">
+              <div class="text-xs text-slate-500">All-time focus</div>
+              <div class="text-2xl font-extrabold"><span id="summary-focus-total">0</span> min</div>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Tip: Pair a 25-minute focus block with an AI Tutor chapter explanation for maximum retention.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== 5. MY NOTES ==================== -->
+      <section id="tab-notes" class="tab-section hidden space-y-6">
+        <div>
+          <div class="text-xs font-extrabold tracking-widest uppercase text-indigo-600 dark:text-indigo-400">KEEP YOUR IDEAS</div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">My Notes 📝</h1>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Store key definitions, formulas, and AI Tutor chapter lessons.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Create a note card -->
+          <div class="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 h-fit">
+            <h2 class="font-bold text-base">Create a note</h2>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Note Title</label>
+              <input id="note-title" type="text" placeholder="e.g., Chapter 4 Formulas" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Subject</label>
+              <select id="note-subject" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none">
+                <option value="Science">Science</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="English">English</option>
+                <option value="Social Science">Social Science</option>
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Biology">Biology</option>
+                <option value="History">History</option>
+                <option value="Geography">Geography</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Your Note</label>
+              <textarea id="note-body" rows="6" placeholder="Write your note here..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+            </div>
+            <button onclick="createNote()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-sm shadow-sm transition">
+              Save note
+            </button>
+          </div>
+
+          <!-- Saved notes list -->
+          <div class="lg:col-span-2 space-y-4" id="saved-notes-list">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== 6. PROGRESS & XP ==================== -->
+      <section id="tab-progress" class="tab-section hidden space-y-6">
+        <div>
+          <div class="text-xs font-extrabold tracking-widest uppercase text-indigo-600 dark:text-indigo-400">YOUR ACHIEVEMENTS</div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">Progress & XP 📈</h1>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Every focus session, completed chapter, and saved note levels up your study buddy.</p>
+        </div>
+
+        <!-- 4 Stat Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500">⭐ Total XP</div>
+            <div id="prog-total-xp" class="text-2xl sm:text-3xl font-extrabold mt-2 text-indigo-600 dark:text-indigo-400">0</div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500">⏱️ Focus minutes</div>
+            <div id="prog-focus-mins" class="text-2xl sm:text-3xl font-extrabold mt-2">0</div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500">📚 Chapters done</div>
+            <div id="prog-chapters-done" class="text-2xl sm:text-3xl font-extrabold mt-2 text-emerald-600 dark:text-emerald-400">0</div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500">📝 Notes saved</div>
+            <div id="prog-notes-saved" class="text-2xl sm:text-3xl font-extrabold mt-2 text-amber-500">0</div>
+          </div>
+        </div>
+
+        <!-- Level Progress Card -->
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between gap-4">
+          <div class="flex-1 space-y-2">
+            <div id="prog-level-title" class="text-lg font-extrabold">🐣 Level 1 — Beginner</div>
+            <div id="prog-level-sub" class="text-xs text-slate-500 dark:text-slate-400">0 / 100 XP to next level</div>
+            <div class="w-full bg-slate-200 dark:bg-slate-800 h-3 rounded-full overflow-hidden">
+              <div id="prog-level-bar" class="bg-indigo-600 h-full rounded-full transition-all" style="width: 0%"></div>
+            </div>
+          </div>
+          <div id="prog-level-emoji" class="text-5xl buddy-float select-none">🐣</div>
+        </div>
+
+        <!-- Achievements Grid -->
+        <div id="achievements-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- ==================== 7. SETTINGS ==================== -->
+      <section id="tab-settings" class="tab-section hidden space-y-6">
+        <div>
+          <div class="text-xs font-extrabold tracking-widest uppercase text-indigo-600 dark:text-indigo-400">APP & ALERTS</div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">Settings ⚙️</h1>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage home screen installation, 2-day exam alerts, and JSON backups.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Install on Phone or PC Card -->
+          <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <h2 class="font-bold text-base">Install on Phone or PC</h2>
+            <p id="settings-install-note" class="text-xs text-slate-500 dark:text-slate-400">Install StudyBuddy as an app for one-click launch from your home screen or desktop.</p>
+            <div class="flex flex-wrap gap-2.5">
+              <button onclick="openInstallModal()" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">📲 Install App</button>
+              <button onclick="markAppInstalled()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">✓ Mark Installed</button>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs text-slate-600 dark:text-slate-300 space-y-1.5">
+              <div><strong>PC (Chrome / Edge):</strong> Click the install icon in the address bar or menu → <em>Install StudyBuddy</em>.</div>
+              <div><strong>Phone (iOS / Android):</strong> Tap Share or Browser Menu → <em>Add to Home Screen</em>.</div>
+            </div>
+          </div>
+
+          <!-- 2-Day Exam Alerts Card -->
+          <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <h2 class="font-bold text-base">2-Day Exam Alerts</h2>
+            <label class="flex items-center gap-2.5 text-sm font-medium cursor-pointer">
+              <input id="exam-alerts-checkbox" type="checkbox" checked onchange="toggleExamAlertsSetting(this.checked)" class="w-4 h-4 accent-indigo-600 rounded" />
+              <span>Enable automatic 2-day exam reminders</span>
+            </label>
+            <div class="flex flex-wrap gap-2.5">
+              <button onclick="requestDeviceNotifications()" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">🔔 Allow Device Notifications</button>
+              <button onclick="checkOrTestExamAlert()" class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold transition">⚡ Check / Test Alert</button>
+            </div>
+          </div>
+
+          <!-- Backup & Restore (JSON) Card -->
+          <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <h2 class="font-bold text-base">Backup & Restore (JSON)</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Export your XP, syllabus, photos, and notes to a JSON file or restore from an existing backup.</p>
+            <div class="flex flex-wrap gap-2.5">
+              <button onclick="exportBackupJSON()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">⬇️ Export Backup JSON</button>
+              <label class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold cursor-pointer transition">
+                ⬆️ Import Backup JSON
+                <input type="file" accept=".json" onchange="importBackupJSON(event)" class="hidden" />
+              </label>
+            </div>
+          </div>
+
+          <!-- Clear All Data Card -->
+          <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <h2 class="font-bold text-base text-rose-600 dark:text-rose-400">Clear All Data</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Reset all stored XP, syllabus progress, notes, and preferences on this browser.</p>
+            <div id="clear-data-initial">
+              <button onclick="showClearDataConfirm()" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition">🗑️ Clear All Data</button>
+            </div>
+            <div id="clear-data-confirm" class="hidden flex flex-wrap items-center gap-2.5">
+              <button onclick="executeClearAllData()" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition">Yes, Delete Everything</button>
+              <button onclick="cancelClearDataConfirm()" class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-bold">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MOBILE BOTTOM NAVIGATION -->
+  <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-around items-center py-2 px-1 z-30">
+    <button data-tab="dashboard" onclick="switchTab('dashboard')" class="mobile-nav-btn flex flex-col items-center p-1.5 rounded-xl text-[11px] font-semibold">
+      <span class="text-base">🏠</span> Home
+    </button>
+    <button data-tab="tutor" onclick="switchTab('tutor')" class="mobile-nav-btn flex flex-col items-center p-1.5 rounded-xl text-[11px] font-semibold">
+      <span class="text-base">🤖</span> AI Tutor
+    </button>
+    <button data-tab="exams" onclick="switchTab('exams')" class="mobile-nav-btn flex flex-col items-center p-1.5 rounded-xl text-[11px] font-semibold">
+      <span class="text-base">📚</span> Syllabus
+    </button>
+    <button data-tab="timer" onclick="switchTab('timer')" class="mobile-nav-btn flex flex-col items-center p-1.5 rounded-xl text-[11px] font-semibold">
+      <span class="text-base">⏱️</span> Focus
+    </button>
+    <button data-tab="notes" onclick="switchTab('notes')" class="mobile-nav-btn flex flex-col items-center p-1.5 rounded-xl text-[11px] font-semibold">
+      <span class="text-base">📝</span> Notes
+    </button>
+    <button data-tab="progress" onclick="switchTab('progress')" class="mobile-nav-btn flex flex-col items-center p-1.5 rounded-xl text-[11px] font-semibold">
+      <span class="text-base">📈</span> XP
+    </button>
+  </nav>
+
+  <!-- MODAL 1: PHOTO PREVIEW MODAL -->
+  <div id="photo-preview-modal" class="hidden fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl" onclick="event.stopPropagation()">
+      <div class="px-5 py-3.5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <span class="font-bold text-sm">Syllabus / Exam Schedule Photo</span>
+        <button onclick="document.getElementById('photo-preview-modal').classList.add('hidden')" class="text-xl font-bold text-slate-400 hover:text-slate-700 dark:hover:text-white">&times;</button>
+      </div>
+      <div class="p-4 bg-slate-100 dark:bg-slate-950 flex justify-center max-h-[75vh] overflow-auto">
+        <img id="modal-photo-img" src="" alt="Exam Schedule" class="max-w-full h-auto rounded-xl" />
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: INSTALL STUDYBUDDY AS AN APP MODAL -->
+  <div id="install-app-modal" class="hidden fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-extrabold">Install StudyBuddy as an App 📲</h3>
+        <button onclick="document.getElementById('install-app-modal').classList.add('hidden')" class="text-xl font-bold text-slate-400">&times;</button>
+      </div>
+      <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+        Add <strong>StudyBuddy</strong> to your home screen or desktop for full-screen focus sessions and quick syllabus access:
+      </p>
+      <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-xs space-y-2">
+        <div><strong>• Android / Chrome / Edge:</strong> Tap the browser menu (⋮) and select <strong>Install app</strong> or <strong>Add to Home screen</strong>.</div>
+        <div><strong>• iPhone / iPad (Safari):</strong> Tap the <strong>Share</strong> icon and choose <strong>Add to Home Screen</strong>.</div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="document.getElementById('install-app-modal').classList.add('hidden')" class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-bold">Close</button>
+        <button onclick="markAppInstalled(); document.getElementById('install-app-modal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold">✓ Mark Installed</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. STATE & LOCALSTORAGE
+    // =========================================================================
+    const STORAGE_KEY = 'studybuddy_exact_v1';
+
+    function createEmptyState() {
+      return {
+        xp: 0,
+        focusToday: 0,
+        focusTotal: 0,
+        sessionsToday: 0,
+        streak: 0,
+        lastDate: new Date().toISOString().split('T')[0],
+        darkMode: false,
+        appInstalled: false,
+        examAlertsEnabled: true,
+        exams: [],
+        notes: []
+      };
+    }
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return createEmptyState();
+        const parsed = { ...createEmptyState(), ...JSON.parse(raw) };
+        parsed.exams = Array.isArray(parsed.exams) ? parsed.exams : [];
+        parsed.notes = Array.isArray(parsed.notes) ? parsed.notes : [];
+        const today = new Date().toISOString().split('T')[0];
+        if (parsed.lastDate !== today) {
+          parsed.focusToday = 0;
+          parsed.sessionsToday = 0;
+          parsed.lastDate = today;
+        }
+        return parsed;
+      } catch {
+        return createEmptyState();
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch {
+        showToast('Storage full — consider removing large photos.', 'error');
+      }
+      renderAll();
+    }
+
+    function addXP(points, label) {
+      const prevLvl = Math.floor(state.xp / 100) + 1;
+      state.xp += points;
+      if (state.streak === 0) {
+        state.streak = 1;
+      }
+      saveState();
+      const nextLvl = Math.floor(state.xp / 100) + 1;
+      showToast(`+${points} XP — ${label}`, 'success');
+      if (nextLvl > prevLvl) {
+        setTimeout(() => showToast(`🎉 Level Up! You reached Level ${nextLvl}!`, 'success'), 500);
+      }
+    }
+
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      const bg = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-rose-600' : 'bg-indigo-600';
+      el.className = `${bg} text-white px-4 py-3 rounded-xl shadow-lg text-xs font-bold pointer-events-auto transition-opacity duration-300`;
+      el.textContent = msg;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 300);
+      }, 3200);
+    }
+
+    // =========================================================================
+    // 2. NAVIGATION & THEME
+    // =========================================================================
+    function applyTheme(isDark = state.darkMode) {
+      const enabled = Boolean(isDark);
+      document.documentElement.classList.toggle('dark', enabled);
+      document.documentElement.style.colorScheme = enabled ? 'dark' : 'light';
+      const label = enabled ? '☀️ Light mode' : '🌙 Dark mode';
+      const sidebarBtn = document.getElementById('sidebar-dark-btn');
+      const mobileBtn = document.getElementById('mobile-dark-btn');
+      if (sidebarBtn) sidebarBtn.textContent = label;
+      if (mobileBtn) mobileBtn.textContent = label;
+    }
+
+    function setThemeMode(mode) {
+      const nextDark = mode === 'dark' ? true : mode === 'light' ? false : !state.darkMode;
+      state.darkMode = nextDark;
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch {
+        // Ignore storage write issues during theme switch
+      }
+      applyTheme(nextDark);
+    }
+
+    function toggleDarkMode() {
+      setThemeMode(state.darkMode ? 'light' : 'dark');
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-section').forEach(s => s.classList.add('hidden'));
+      const el = document.getElementById(`tab-${tab}`);
+      if (el) el.classList.remove('hidden');
+
+      document.querySelectorAll('.sidebar-nav-btn').forEach(btn => {
+        const active = btn.dataset.tab === tab;
+        btn.className = active
+          ? 'sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 transition'
+          : 'sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition';
+      });
+
+      document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+        const active = btn.dataset.tab === tab;
+        btn.className = active
+          ? 'mobile-nav-btn flex flex-col items-center p-1.5 rounded-xl text-[11px] font-bold text-indigo-600 dark:text-indigo-400'
+          : 'mobile-nav-btn flex flex-col items-center p-1.5 rounded-xl text-[11px] font-semibold text-slate-500 dark:text-slate-400';
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // =========================================================================
+    // 3. GEMINI API CLIENT (WITH EXPONENTIAL BACKOFF)
+    // =========================================================================
+    const apiKey = "";
+
+    async function callGemini(contents, systemInstruction = "") {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+      const payload = { contents };
+      if (systemInstruction) {
+        payload.systemInstruction = { parts: [{ text: systemInstruction }] };
+      }
+
+      const delays = [1000, 2000, 4000];
+      for (let i = 0; i <= delays.length; i++) {
+        try {
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!text) throw new Error('Empty response');
+          return text;
+        } catch (err) {
+          if (i === delays.length) throw err;
+          await new Promise(r => setTimeout(r, delays[i]));
+        }
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function renderMarkdown(md) {
+      let html = escapeHtml(md);
+
+      // Formula / code blocks
+      html = html.replace(/```([\s\S]*?)```/g, (_, code) => {
+        return `<div class="formula-box font-mono text-xs sm:text-sm whitespace-pre-wrap font-semibold text-indigo-950 dark:text-indigo-100">${code.trim()}</div>`;
+      });
+
+      // Inline code
+      html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      // Headings
+      html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+      html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+      html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+
+      // Bold & Italic
+      html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+      // Lists
+      html = html.replace(/^\s*[-*•]\s+(.*)$/gim, '<li>$1</li>');
+      html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>');
+      html = html.replace(/<\/ul>\s*<ul>/g, '');
+
+      // Paragraphs
+      html = html.split('\n\n').map(block => {
+        const t = block.trim();
+        if (!t) return '';
+        if (t.startsWith('<h') || t.startsWith('<ul') || t.startsWith('<div class="formula-box"')) return t;
+        return `<p>${t.replace(/\n/g, '<br>')}</p>`;
+      }).join('\n');
+
+      return html;
+    }
+
+    // =========================================================================
+    // 4. UPGRADED AI TUTOR (EXACT CONTROLS + FULL CHAPTER + FOLLOW-BACK CHAT)
+    // =========================================================================
+    const GRADES = [
+      'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6',
+      'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12', 'College'
+    ];
+    const SUBJECTS = [
+      'Science', 'Mathematics', 'English', 'Social Science', 'Physics',
+      'Chemistry', 'Biology', 'History', 'Geography', 'Computer Science', 'Other'
+    ];
+
+    let selectedGrade = 'Class 10';
+    let selectedSubject = 'Science';
+    let selectedMode = 'explanation';
+    let selectedDifficulty = 'Medium';
+
+    let tutorHistory = [];
+    let activeLessonMeta = { grade: '', subject: '', topic: '', markdown: '' };
+
+    function initTutorControls() {
+      const gradeGrid = document.getElementById('grade-buttons-grid');
+      gradeGrid.innerHTML = GRADES.map(g => `
+        <button type="button" onclick="selectTutorGrade('${g}')" id="grade-btn-${g.replace(/\s+/g, '-')}"
+          class="px-3 py-1.5 rounded-xl border text-xs font-bold transition">
+          ${g}
+        </button>
+      `).join('');
+
+      const subjGrid = document.getElementById('subject-buttons-grid');
+      subjGrid.innerHTML = SUBJECTS.map(s => `
+        <button type="button" onclick="selectTutorSubject('${s}')" id="subj-btn-${s.replace(/\s+/g, '-')}"
+          class="px-3 py-1.5 rounded-xl border text-xs font-bold transition">
+          ${s}
+        </button>
+      `).join('');
+
+      updateTutorControlStyles();
+    }
+
+    function selectTutorGrade(g) {
+      selectedGrade = g;
+      updateTutorControlStyles();
+    }
+
+    function selectTutorSubject(s) {
+      selectedSubject = s;
+      updateTutorControlStyles();
+    }
+
+    function selectTutorMode(m) {
+      selectedMode = m;
+      updateTutorControlStyles();
+    }
+
+    function selectTutorDifficulty(d) {
+      selectedDifficulty = d;
+      updateTutorControlStyles();
+    }
+
+    function updateTutorControlStyles() {
+      GRADES.forEach(g => {
+        const btn = document.getElementById(`grade-btn-${g.replace(/\s+/g, '-')}`);
+        if (!btn) return;
+        const active = g === selectedGrade;
+        btn.className = active
+          ? 'px-3 py-1.5 rounded-xl border border-indigo-600 bg-indigo-600 text-white text-xs font-bold shadow-sm transition'
+          : 'px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-400 text-xs font-bold transition';
+      });
+
+      SUBJECTS.forEach(s => {
+        const btn = document.getElementById(`subj-btn-${s.replace(/\s+/g, '-')}`);
+        if (!btn) return;
+        const active = s === selectedSubject;
+        btn.className = active
+          ? 'px-3 py-1.5 rounded-xl border border-indigo-600 bg-indigo-600 text-white text-xs font-bold shadow-sm transition'
+          : 'px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-400 text-xs font-bold transition';
+      });
+
+      ['explanation', 'worksheet'].forEach(m => {
+        const btn = document.getElementById(`mode-btn-${m}`);
+        const active = m === selectedMode;
+        btn.className = active
+          ? 'p-3 rounded-xl border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-950/70 text-indigo-900 dark:text-indigo-200 text-left transition'
+          : 'p-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-left transition';
+      });
+
+      ['Easy', 'Medium', 'Hard'].forEach(d => {
+        const btn = document.getElementById(`diff-btn-${d}`);
+        const active = d === selectedDifficulty;
+        btn.className = active
+          ? 'py-3 px-3 rounded-xl border-2 border-indigo-600 bg-indigo-600 text-white text-xs font-bold text-center transition'
+          : 'py-3 px-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold text-center transition';
+      });
+    }
+
+    const FULL_CHAPTER_SYSTEM_PROMPT = `You are a thorough, expert classroom teacher.
+STRICT INSTRUCTIONS:
+1. NEVER give generic study advice or meta-tips on how to study (do NOT say "make flashcards", "read your textbook", or "practise regularly").
+2. Teach the ENTIRE chapter content directly, systematically, and completely so the student understands every concept in the chapter.
+3. Structure the lesson clearly with numbered headings and subheadings:
+   - ## 1. Chapter Overview & Core Concepts
+   - ## 2. Detailed Explanation of Every Heading & Subtopic in the Chapter (cover every major heading/topic thoroughly with clear explanations, laws, and step-by-step worked examples)
+   - ## 3. Complete Formula Sheet & Equations Breakdown (list EVERY formula, equation, and mathematical/scientific rule in the chapter inside triple backticks \`\`\`, define EVERY variable/symbol, state its SI units and sign conventions, and provide a step-by-step solved numerical/example for each)
+   - ## 4. Key Definitions & Important Points to Remember
+4. If Worksheet mode is requested, provide comprehensive chapter-wide practice questions (MCQs, conceptual short answers, and numerical problems covering all headings and formulas) followed by complete step-by-step solutions.`;
+
+    async function generateStudyMaterial() {
+      const topic = document.getElementById('tutor-topic-input').value.trim();
+      if (!topic) {
+        showToast('Please enter a chapter name or topic first.', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('generate-tutor-btn');
+      const contentArea = document.getElementById('lesson-content-area');
+      const actionBtns = document.getElementById('lesson-action-btns');
+      const followUpSec = document.getElementById('tutor-followup-section');
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Generating complete chapter lesson...';
+      document.getElementById('lesson-output-header').textContent = `${selectedGrade} • ${selectedSubject} — ${topic}`;
+      document.getElementById('lesson-output-meta').textContent = `Mode: ${selectedMode === 'explanation' ? 'Full Chapter Explanation' : 'Practice Worksheet'} • Difficulty: ${selectedDifficulty}`;
+      actionBtns.classList.add('hidden');
+      followUpSec.classList.add('hidden');
+
+      contentArea.innerHTML = `
+        <div class="py-10 text-center space-y-2">
+          <div class="text-3xl animate-bounce">📚</div>
+          <p class="font-bold text-indigo-600 dark:text-indigo-400">Teaching the complete chapter "${escapeHtml(topic)}"...</p>
+          <p class="text-xs text-slate-500">Covering all chapter headings, detailed explanations, formulas, symbol meanings, and solved examples.</p>
+        </div>
+      `;
+
+      const prompt = selectedMode === 'worksheet'
+        ? `Generate a complete Practice Worksheet with full step-by-step solutions for ${selectedGrade} ${selectedSubject}, Chapter/Topic: "${topic}" (Difficulty: ${selectedDifficulty}). Cover all headings and formulas in the chapter.`
+        : `Explain the ENTIRE chapter "${topic}" for ${selectedGrade} ${selectedSubject} (Difficulty: ${selectedDifficulty}). Cover every single heading, subtopic, definition, law, and ALL formulas in the chapter (defining every symbol, unit, and showing solved examples). Do not give study tips—teach the actual chapter content completely.`;
+
+      try {
+        const responseText = await callGemini([{ role: 'user', parts: [{ text: prompt }] }], FULL_CHAPTER_SYSTEM_PROMPT);
+
+        activeLessonMeta = {
+          grade: selectedGrade,
+          subject: selectedSubject,
+          topic,
+          markdown: responseText
+        };
+
+        tutorHistory = [
+          { role: 'user', parts: [{ text: prompt }] },
+          { role: 'model', parts: [{ text: responseText }] }
+        ];
+
+        contentArea.innerHTML = renderMarkdown(responseText);
+        actionBtns.classList.remove('hidden');
+        followUpSec.classList.remove('hidden');
+        document.getElementById('followup-chat-thread').innerHTML = '';
+
+        addXP(15, `Generated ${topic} lesson`);
+      } catch (err) {
+        contentArea.innerHTML = `
+          <div class="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-sm">
+            <strong>Could not generate lesson right now.</strong> Please try again in a moment.
+          </div>
+        `;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '✨ Generate study material';
+      }
+    }
+
+    function askQuickFollowUp(text) {
+      document.getElementById('followup-question-input').value = text;
+      submitFollowUpQuestion(new Event('submit'));
+    }
+
+    async function submitFollowUpQuestion(event) {
+      event.preventDefault();
+      const input = document.getElementById('followup-question-input');
+      const question = input.value.trim();
+      if (!question || tutorHistory.length === 0) return;
+
+      const thread = document.getElementById('followup-chat-thread');
+      const submitBtn = document.getElementById('followup-submit-btn');
+
+      // Student question bubble
+      const qDiv = document.createElement('div');
+      qDiv.className = 'flex justify-end';
+      qDiv.innerHTML = `
+        <div class="max-w-[85%] bg-indigo-600 text-white px-4 py-2.5 rounded-2xl rounded-br-sm text-xs sm:text-sm shadow-sm">
+          <div class="text-[10px] font-bold uppercase text-indigo-200 mb-0.5">Your Cross-Question</div>
+          <div>${escapeHtml(question)}</div>
+        </div>
+      `;
+      thread.appendChild(qDiv);
+      input.value = '';
+      thread.scrollTop = thread.scrollHeight;
+
+      // Loading bubble
+      const aDiv = document.createElement('div');
+      aDiv.className = 'flex justify-start';
+      aDiv.innerHTML = `
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-4 py-3 rounded-2xl rounded-bl-sm text-xs text-slate-500">
+          <span class="animate-pulse font-semibold">🤖 AI Tutor is explaining your doubt...</span>
+        </div>
+      `;
+      thread.appendChild(aDiv);
+      thread.scrollTop = thread.scrollHeight;
+
+      submitBtn.disabled = true;
+      tutorHistory.push({ role: 'user', parts: [{ text: question }] });
+
+      const followUpSys = `You are continuing to teach ${activeLessonMeta.grade} ${activeLessonMeta.subject} — Chapter: "${activeLessonMeta.topic}".
+The student is asking a follow-up cross-question because they couldn't understand part of the chapter or want help with additional topics in this chapter.
+Explain directly, clearly, and thoroughly with step-by-step breakdowns, formulas, and examples. Never give generic study advice.`;
+
+      try {
+        const answer = await callGemini(tutorHistory, followUpSys);
+        tutorHistory.push({ role: 'model', parts: [{ text: answer }] });
+
+        aDiv.innerHTML = `
+          <div class="max-w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-4 py-3.5 rounded-2xl rounded-bl-sm text-xs sm:text-sm lesson-markdown shadow-sm">
+            <div class="text-[10px] font-extrabold uppercase text-indigo-600 dark:text-indigo-400 mb-1">AI Tutor Explanation</div>
+            ${renderMarkdown(answer)}
+          </div>
+        `;
+      } catch {
+        tutorHistory.pop();
+        aDiv.innerHTML = `
+          <div class="bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 px-4 py-2.5 rounded-xl text-xs font-semibold">
+            Failed to answer follow-up. Please try again.
+          </div>
+        `;
+      } finally {
+        submitBtn.disabled = false;
+        thread.scrollTop = thread.scrollHeight;
+      }
+    }
+
+    function resetFollowUpThread() {
+      if (tutorHistory.length > 2) {
+        tutorHistory = tutorHistory.slice(0, 2);
+      }
+      document.getElementById('followup-chat-thread').innerHTML = '';
+    }
+
+    function saveLessonToNotes() {
+      if (!activeLessonMeta.markdown) return;
+      state.notes.unshift({
+        id: 'note-' + Date.now(),
+        title: `${activeLessonMeta.topic} (${activeLessonMeta.grade})`,
+        subject: activeLessonMeta.subject,
+        body: activeLessonMeta.markdown,
+        date: new Date().toLocaleDateString()
+      });
+      addXP(10, 'Saved AI Tutor lesson to My Notes');
+    }
+
+    function copyLessonToClipboard() {
+      if (!activeLessonMeta.markdown) return;
+      const ta = document.createElement('textarea');
+      ta.value = activeLessonMeta.markdown;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('Lesson copied to clipboard!', 'success');
+    }
+
+    // =========================================================================
+    // 5. EXAM & SYLLABUS + DAY-BEFORE MOCK TEST
+    // =========================================================================
+    let pendingExamPhoto = null;
+    let selectedMockDuration = 10;
+    let mockTimerId = null;
+    let mockSecondsLeft = 0;
+    let currentMockQuestions = [];
+
+    function handleExamPhotoSelect(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        pendingExamPhoto = e.target.result;
+        document.getElementById('pending-photo-img').src = pendingExamPhoto;
+        document.getElementById('pending-photo-preview').classList.remove('hidden');
+        document.getElementById('remove-photo-btn').classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearPendingExamPhoto() {
+      pendingExamPhoto = null;
+      document.getElementById('pending-photo-preview').classList.add('hidden');
+      document.getElementById('remove-photo-btn').classList.add('hidden');
+    }
+
+    function saveSubjectSyllabus() {
+      const subject = document.getElementById('exam-subject').value.trim();
+      const date = document.getElementById('exam-date').value;
+      const chaptersRaw = document.getElementById('exam-chapters').value.trim();
+
+      if (!subject || !date) {
+        showToast('Please enter Subject and Exam Date.', 'error');
+        return;
+      }
+
+      const chapterList = chaptersRaw
+        .split(/\n|,/)
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      const chapters = (chapterList.length ? chapterList : ['Full Syllabus']).map((name, i) => ({
+        id: `ch-${Date.now()}-${i}`,
+        name,
+        done: false
+      }));
+
+      state.exams.unshift({
+        id: 'ex-' + Date.now(),
+        subject,
+        date,
+        photo: pendingExamPhoto,
+        chapters
+      });
+
+      document.getElementById('exam-subject').value = '';
+      document.getElementById('exam-date').value = '';
+      document.getElementById('exam-chapters').value = '';
+      clearPendingExamPhoto();
+      saveState();
+      checkExamAlerts();
+      showToast(`Saved syllabus for ${subject}!`, 'success');
+    }
+
+    function toggleChapterStatus(examId, chapterId) {
+      const ex = state.exams.find(e => e.id === examId);
+      if (!ex) return;
+      const ch = ex.chapters.find(c => c.id === chapterId);
+      if (!ch) return;
+      ch.done = !ch.done;
+      if (ch.done) {
+        addXP(20, `Completed "${ch.name}"`);
+      } else {
+        saveState();
+      }
+    }
+
+    function deleteExamSubject(examId) {
+      state.exams = state.exams.filter(e => e.id !== examId);
+      saveState();
+      showToast('Subject removed.', 'info');
+    }
+
+    function openPhotoPreview(src) {
+      document.getElementById('modal-photo-img').src = src;
+      document.getElementById('photo-preview-modal').classList.remove('hidden');
+    }
+
+    function teachChapterFromSyllabus(subject, chapterName) {
+      if (SUBJECTS.includes(subject)) selectedSubject = subject;
+      updateTutorControlStyles();
+      document.getElementById('tutor-topic-input').value = chapterName;
+      switchTab('tutor');
+      generateStudyMaterial();
+    }
+
+    function selectMockDuration(mins) {
+      selectedMockDuration = mins;
+      [5, 10, 20, 30].forEach(m => {
+        const btn = document.getElementById(`mock-time-${m}`);
+        if (!btn) return;
+        btn.className = m === mins
+          ? 'mock-time-btn py-2 rounded-xl border border-indigo-600 bg-indigo-600 text-white text-xs font-bold'
+          : 'mock-time-btn py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold';
+      });
+    }
+
+    async function startTimedMockTest() {
+      const examId = document.getElementById('mock-subject-select').value;
+      const filter = document.getElementById('mock-filter-select').value;
+      const exam = state.exams.find(e => e.id === examId);
+
+      if (!exam) {
+        showToast('Please choose a subject first.', 'error');
+        return;
+      }
+
+      let chapters = exam.chapters;
+      if (filter === 'completed') chapters = chapters.filter(c => c.done);
+      if (filter === 'remaining') chapters = chapters.filter(c => !c.done);
+
+      if (chapters.length === 0) {
+        showToast('No chapters match the selected filter.', 'error');
+        return;
+      }
+
+      const qCount = selectedMockDuration === 5 ? 5 : selectedMockDuration === 10 ? 8 : selectedMockDuration === 20 ? 12 : 15;
+      const btn = document.getElementById('start-mock-test-btn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Preparing Exam Questions...';
+
+      const prompt = `Create ${qCount} multiple-choice exam questions for Subject: "${exam.subject}", Chapters: ${chapters.map(c => c.name).join(', ')}.
+Return ONLY a valid JSON array (no markdown fences) with objects:
+[{"question": "...", "options": ["...", "...", "...", "..."], "answerIndex": 0, "explanation": "..."}]`;
+
+      try {
+        const raw = await callGemini([{ role: 'user', parts: [{ text: prompt }] }]);
+        currentMockQuestions = JSON.parse(raw.replace(/```json|```/g, '').trim());
+      } catch {
+        currentMockQuestions = chapters.slice(0, 5).map(ch => ({
+          question: `Concept check on "${ch.name}": Which statement accurately reflects the core laws and formulas of ${ch.name}?`,
+          options: [
+            `Applies standard definitions, SI units, and derivations of ${ch.name}`,
+            `Ignores boundary conditions and physical units`,
+            `Only holds true in a vacuum with zero energy`,
+            `None of the above`
+          ],
+          answerIndex: 0,
+          explanation: `Reviewing all formulas and definitions in ${ch.name} ensures exam accuracy.`
+        }));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '📝 Start Timed Exam Test';
+      }
+
+      document.getElementById('mock-test-heading').textContent = `${exam.subject} — ${selectedMockDuration} Min Timed Test`;
+      document.getElementById('mock-questions-list').innerHTML = currentMockQuestions.map((q, idx) => `
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-2">
+          <div class="font-bold text-sm">Q${idx + 1}. ${escapeHtml(q.question)}</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            ${q.options.map((opt, oIdx) => `
+              <label class="flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium cursor-pointer">
+                <input type="radio" name="mock-ans-${idx}" value="${oIdx}" class="accent-indigo-600" />
+                <span>${escapeHtml(opt)}</span>
+              </label>
+            `).join('')}
+          </div>
+          <div id="mock-feedback-${idx}" class="hidden text-xs p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-200"></div>
+        </div>
+      `).join('');
+
+      document.getElementById('mock-test-container').classList.remove('hidden');
+      clearInterval(mockTimerId);
+      mockSecondsLeft = selectedMockDuration * 60;
+      renderMockClock();
+      mockTimerId = setInterval(() => {
+        mockSecondsLeft--;
+        renderMockClock();
+        if (mockSecondsLeft <= 0) {
+          clearInterval(mockTimerId);
+          gradeMockTest();
+        }
+      }, 1000);
+    }
+
+    function renderMockClock() {
+      const m = Math.floor(mockSecondsLeft / 60).toString().padStart(2, '0');
+      const s = (mockSecondsLeft % 60).toString().padStart(2, '0');
+      document.getElementById('mock-countdown').textContent = `${m}:${s}`;
+    }
+
+    function closeMockTest() {
+      clearInterval(mockTimerId);
+      document.getElementById('mock-test-container').classList.add('hidden');
+    }
+
+    function gradeMockTest() {
+      clearInterval(mockTimerId);
+      let correct = 0;
+      currentMockQuestions.forEach((q, idx) => {
+        const picked = document.querySelector(`input[name="mock-ans-${idx}"]:checked`);
+        const val = picked ? parseInt(picked.value, 10) : -1;
+        const fb = document.getElementById(`mock-feedback-${idx}`);
+        fb.classList.remove('hidden');
+        if (val === q.answerIndex) {
+          correct++;
+          fb.innerHTML = `✅ <strong>Correct!</strong> ${escapeHtml(q.explanation || '')}`;
+        } else {
+          fb.innerHTML = `❌ <strong>Correct: ${escapeHtml(q.options[q.answerIndex])}</strong> — ${escapeHtml(q.explanation || '')}`;
+        }
+      });
+      addXP(Math.max(15, correct * 10), `Scored ${correct}/${currentMockQuestions.length} on Mock Test`);
+    }
+
+    // =========================================================================
+    // 6. FOCUS TIMER
+    // =========================================================================
+    let focusSeconds = 25 * 60;
+    let focusPresetMins = 25;
+    let focusLabel = 'Focus Session';
+    let focusInterval = null;
+    let focusRunning = false;
+
+    function updateFocusUI() {
+      const m = Math.floor(focusSeconds / 60).toString().padStart(2, '0');
+      const s = (focusSeconds % 60).toString().padStart(2, '0');
+      document.getElementById('focus-timer-clock').textContent = `${m}:${s}`;
+      document.getElementById('focus-session-label').textContent = focusLabel;
+      document.getElementById('focus-start-btn').textContent = focusRunning ? '⏸ Pause' : '▶ Start';
+    }
+
+    function applyTimerPreset(mins, label) {
+      clearInterval(focusInterval);
+      focusRunning = false;
+      focusPresetMins = mins;
+      focusSeconds = mins * 60;
+      focusLabel = label;
+      updateFocusUI();
+    }
+
+    function setCustomTimerMinutes() {
+      const val = parseInt(document.getElementById('custom-timer-mins').value, 10);
+      if (!val || val < 1 || val > 180) {
+        showToast('Enter minutes between 1 and 180.', 'error');
+        return;
+      }
+      applyTimerPreset(val, 'Focus Session');
+      document.getElementById('custom-timer-mins').value = '';
+    }
+
+    function toggleFocusTimer() {
+      if (focusRunning) {
+        clearInterval(focusInterval);
+        focusRunning = false;
+        updateFocusUI();
+        return;
+      }
+      focusRunning = true;
+      updateFocusUI();
+      focusInterval = setInterval(() => {
+        focusSeconds--;
+        updateFocusUI();
+        if (focusSeconds <= 0) {
+          clearInterval(focusInterval);
+          focusRunning = false;
+          if (focusLabel === 'Focus Session') {
+            state.focusToday += focusPresetMins;
+            state.focusTotal += focusPresetMins;
+            state.sessionsToday = (state.sessionsToday || 0) + 1;
+            addXP(25, `Completed ${focusPresetMins} min focus session`);
+          } else {
+            showToast('Break finished! Ready to focus again?', 'info');
+          }
+          focusSeconds = focusPresetMins * 60;
+          updateFocusUI();
+        }
+      }, 1000);
+    }
+
+    function resetFocusTimer() {
+      clearInterval(focusInterval);
+      focusRunning = false;
+      focusSeconds = focusPresetMins * 60;
+      updateFocusUI();
+    }
+
+    // =========================================================================
+    // 7. MY NOTES
+    // =========================================================================
+    function createNote() {
+      const title = document.getElementById('note-title').value.trim();
+      const subject = document.getElementById('note-subject').value;
+      const body = document.getElementById('note-body').value.trim();
+
+      if (!title || !body) {
+        showToast('Please enter both Note Title and Your Note.', 'error');
+        return;
+      }
+
+      state.notes.unshift({
+        id: 'note-' + Date.now(),
+        title,
+        subject,
+        body,
+        date: new Date().toLocaleDateString()
+      });
+
+      document.getElementById('note-title').value = '';
+      document.getElementById('note-body').value = '';
+      addXP(10, 'Saved study note');
+    }
+
+    function deleteNote(id) {
+      state.notes = state.notes.filter(n => n.id !== id);
+      saveState();
+      showToast('Note deleted.', 'info');
+    }
+
+    // =========================================================================
+    // 8. SETTINGS, INSTALL MODAL, 2-DAY ALERTS & BACKUP
+    // =========================================================================
+    function openInstallModal() {
+      document.getElementById('install-app-modal').classList.remove('hidden');
+    }
+
+    function markAppInstalled() {
+      state.appInstalled = true;
+      saveState();
+      showToast('StudyBuddy marked as installed!', 'success');
+    }
+
+    function toggleExamAlertsSetting(enabled) {
+      state.examAlertsEnabled = enabled;
+      saveState();
+      checkExamAlerts();
+    }
+
+    function checkExamAlerts(forceTest = false) {
+      const banner = document.getElementById('exam-alert-banner');
+      if (!state.examAlertsEnabled && !forceTest) {
+        banner.classList.add('hidden');
+        return [];
+      }
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const upcoming = state.exams.filter(ex => {
+        const d = new Date(ex.date + 'T00:00:00');
+        const diff = Math.ceil((d - today) / 86400000);
+        return diff >= 0 && diff <= 2;
+      });
+
+      if (upcoming.length > 0) {
+        document.getElementById('exam-alert-text').textContent =
+          `2-Day Exam Alert: ${upcoming.map(e => `${e.subject} (${e.date})`).join(', ')}`;
+        banner.classList.remove('hidden');
+      } else if (forceTest) {
+        document.getElementById('exam-alert-text').textContent =
+          'Test Alert: 2-Day Exam Reminders are active and working!';
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+      return upcoming;
+    }
+
+    function requestDeviceNotifications() {
+      if ('Notification' in window) {
+        Notification.requestPermission().then(p => {
+          showToast(p === 'granted' ? 'Device notifications enabled!' : 'Notification permission not granted.', 'info');
+        });
+      }
+    }
+
+    function checkOrTestExamAlert() {
+      const upcoming = checkExamAlerts(true);
+      if ('Notification' in window && Notification.permission === 'granted' && upcoming.length > 0) {
+        new Notification('StudyBuddy Exam Alert', {
+          body: `Exam within 2 days: ${upcoming.map(e => e.subject).join(', ')}`
+        });
+      }
+    }
+
+    function exportBackupJSON() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `studybuddy-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Backup JSON exported!', 'success');
+    }
+
+    function importBackupJSON(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (typeof data.xp !== 'number') throw new Error('Invalid JSON');
+          state = { ...structuredClone(defaultState), ...data };
+          saveState();
+          applyTheme();
+          showToast('Backup JSON imported successfully!', 'success');
+        } catch {
+          showToast('Invalid JSON backup file.', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function showClearDataConfirm() {
+      document.getElementById('clear-data-initial').classList.add('hidden');
+      document.getElementById('clear-data-confirm').classList.remove('hidden');
+    }
+
+    function cancelClearDataConfirm() {
+      document.getElementById('clear-data-confirm').classList.add('hidden');
+      document.getElementById('clear-data-initial').classList.remove('hidden');
+    }
+
+    function executeClearAllData() {
+      localStorage.removeItem(STORAGE_KEY);
+      state = createEmptyState();
+      cancelClearDataConfirm();
+      saveState();
+      applyTheme(false);
+      showToast('All data cleared.', 'info');
+    }
+
+    // =========================================================================
+    // 9. RENDER ALL VIEWS
+    // =========================================================================
+    function getBuddyInfo(level) {
+      if (level >= 10) return { emoji: '🦅', rank: 'Master Scholar' };
+      if (level >= 5) return { emoji: '🦉', rank: 'Dedicated Learner' };
+      if (level >= 2) return { emoji: '🐥', rank: 'Rising Student' };
+      return { emoji: '🐣', rank: 'Beginner' };
+    }
+
+    function renderAll() {
+      const level = Math.floor(state.xp / 100) + 1;
+      const xpMod = state.xp % 100;
+      const buddy = getBuddyInfo(level);
+
+      // Hide install card on Dashboard if already installed
+      document.getElementById('dashboard-install-card').classList.toggle('hidden', !!state.appInstalled);
+      document.getElementById('exam-alerts-checkbox').checked = !!state.examAlertsEnabled;
+
+      // Sidebar mini XP
+      document.getElementById('sidebar-pet-icon').textContent = buddy.emoji;
+      document.getElementById('sidebar-lvl').textContent = `Level ${level}`;
+      document.getElementById('sidebar-xp').textContent = `${state.xp} XP`;
+      document.getElementById('sidebar-xp-bar').style.width = `${xpMod}%`;
+
+      // Chapters count
+      let totalCh = 0;
+      let doneCh = 0;
+      state.exams.forEach(ex => {
+        totalCh += ex.chapters.length;
+        doneCh += ex.chapters.filter(c => c.done).length;
+      });
+
+      // Dashboard stats
+      document.getElementById('dash-focus-today').textContent = state.focusToday;
+      document.getElementById('dash-total-xp').textContent = state.xp;
+      document.getElementById('dash-streak').textContent = state.streak;
+      document.getElementById('dash-chapters-done').textContent = doneCh;
+      document.getElementById('dash-chapters-total').textContent = `/${totalCh}`;
+
+      // Dashboard Syllabus progress
+      const dashSyl = document.getElementById('dash-syllabus-summary');
+      if (state.exams.length === 0) {
+        dashSyl.innerHTML = `<p class="text-xs text-slate-500">Chapters you are tracking: 0 chapters added yet. Click "Open syllabus →" to add your chapters.</p>`;
+      } else {
+        dashSyl.innerHTML = state.exams.slice(0, 3).map(ex => {
+          const d = ex.chapters.filter(c => c.done).length;
+          const pct = ex.chapters.length ? Math.round((d / ex.chapters.length) * 100) : 0;
+          return `
+            <div>
+              <div class="flex justify-between text-xs font-bold mb-1">
+                <span>${escapeHtml(ex.subject)}</span>
+                <span class="text-slate-500">${d}/${ex.chapters.length} (${pct}%)</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div class="bg-indigo-600 h-full rounded-full" style="width: ${pct}%"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Daily challenge progress
+      const sessionsCompleted = state.sessionsToday || 0;
+      const challengeDone = sessionsCompleted >= 1;
+      document.getElementById('dash-challenge-badge').textContent = challengeDone
+        ? `1 / 1 focus sessions completed ✓`
+        : `${sessionsCompleted} / 1 focus sessions completed`;
+      document.getElementById('dash-challenge-bar').style.width = challengeDone ? '100%' : '0%';
+
+      // Dashboard study buddy
+      document.getElementById('dash-buddy-title').textContent = `${buddy.emoji} Level ${level} — ${buddy.rank}`;
+      document.getElementById('dash-buddy-sub').textContent = `${xpMod} / 100 XP to next level`;
+      document.getElementById('dash-buddy-bar').style.width = `${xpMod}%`;
+      document.getElementById('dash-buddy-emoji').textContent = buddy.emoji;
+
+      // Focus summary
+      document.getElementById('summary-focus-today').textContent = state.focusToday;
+      document.getElementById('summary-focus-total').textContent = state.focusTotal;
+
+      // Progress & XP tab
+      document.getElementById('prog-total-xp').textContent = state.xp;
+      document.getElementById('prog-focus-mins').textContent = state.focusTotal;
+      document.getElementById('prog-chapters-done').textContent = doneCh;
+      document.getElementById('prog-notes-saved').textContent = state.notes.length;
+      document.getElementById('prog-level-title').textContent = `${buddy.emoji} Level ${level} — ${buddy.rank}`;
+      document.getElementById('prog-level-sub').textContent = `${xpMod} / 100 XP to next level`;
+      document.getElementById('prog-level-bar').style.width = `${xpMod}%`;
+      document.getElementById('prog-level-emoji').textContent = buddy.emoji;
+
+      // Achievements Grid
+      const achievements = [
+        { icon: '🌟', title: 'First XP', desc: 'Earn your first 10 XP', done: state.xp >= 10 },
+        { icon: '⏱️', title: 'Deep Focus', desc: 'Complete 25 minutes of focus', done: state.focusTotal >= 25 },
+        { icon: '📚', title: 'Chapter Master', desc: 'Complete 3 syllabus chapters', done: doneCh >= 3 },
+        { icon: '📝', title: 'Note Keeper', desc: 'Save 3 study notes', done: state.notes.length >= 3 },
+        { icon: '🔥', title: 'Consistent Learner', desc: 'Reach Level 2 (100 XP)', done: level >= 2 },
+        { icon: '🦉', title: 'Scholar Rank', desc: 'Reach Level 5 (400 XP)', done: level >= 5 }
+      ];
+      document.getElementById('achievements-grid').innerHTML = achievements.map(a => `
+        <div class="p-4 rounded-2xl border ${a.done ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-950/30' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 opacity-60'} flex items-center gap-3">
+          <span class="text-2xl">${a.icon}</span>
+          <div>
+            <div class="text-sm font-bold">${a.title} ${a.done ? '✓' : ''}</div>
+            <div class="text-xs text-slate-500">${a.desc}</div>
+          </div>
+        </div>
+      `).join('');
+
+      // Render Exams & Syllabus
+      renderExamsList(totalCh, doneCh);
+
+      // Render Saved Notes
+      renderNotesList();
+    }
+
+    function renderExamsList(totalCh, doneCh) {
+      const mockSelect = document.getElementById('mock-subject-select');
+      const prev = mockSelect.value;
+      mockSelect.innerHTML = `<option value="">Select Subject...</option>` +
+        state.exams.map(ex => `<option value="${ex.id}">${escapeHtml(ex.subject)}</option>`).join('');
+      if (prev) mockSelect.value = prev;
+
+      const overallPct = totalCh ? Math.round((doneCh / totalCh) * 100) : 0;
+      document.getElementById('overall-syllabus-xp').textContent = `${overallPct}% Complete • ${doneCh * 20} Chapter XP`;
+
+      const list = document.getElementById('course-progress-list');
+      if (state.exams.length === 0) {
+        list.innerHTML = `<p class="text-xs text-slate-500">No subjects added yet. Add a subject syllabus above to track progress.</p>`;
+        return;
+      }
+
+      list.innerHTML = state.exams.map(ex => {
+        const d = ex.chapters.filter(c => c.done).length;
+        const pct = ex.chapters.length ? Math.round((d / ex.chapters.length) * 100) : 0;
+        return `
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <div class="font-extrabold text-sm sm:text-base">${escapeHtml(ex.subject)}</div>
+                <div class="text-xs text-slate-500">Exam Date: <strong>${ex.date}</strong> • ${pct}% complete (${d * 20} XP)</div>
+              </div>
+              <div class="flex items-center gap-2">
+                ${ex.photo ? `<button onclick="openPhotoPreview('${ex.photo}')" class="px-3 py-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-xs font-bold">🖼️ View Photo</button>` : ''}
+                <button onclick="deleteExamSubject('${ex.id}')" class="px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 text-xs font-bold">Delete</button>
+              </div>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+              <div class="bg-emerald-500 h-full rounded-full transition-all" style="width: ${pct}%"></div>
+            </div>
+            <div class="space-y-1.5">
+              ${ex.chapters.map(ch => `
+                <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+                  <label class="flex items-center gap-2.5 cursor-pointer flex-1 text-xs sm:text-sm font-medium">
+                    <input type="checkbox" ${ch.done ? 'checked' : ''} onchange="toggleChapterStatus('${ex.id}', '${ch.id}')" class="w-4 h-4 accent-emerald-600 rounded" />
+                    <span class="${ch.done ? 'line-through text-slate-400' : ''}">${escapeHtml(ch.name)}</span>
+                  </label>
+                  <button onclick="teachChapterFromSyllabus('${escapeHtml(ex.subject)}', '${escapeHtml(ch.name).replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 text-[11px] font-bold shrink-0">
+                    🤖 Learn Chapter
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderNotesList() {
+      const container = document.getElementById('saved-notes-list');
+      if (state.notes.length === 0) {
+        container.innerHTML = `<div class="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500">No saved notes yet. Create one on the left or save an AI Tutor lesson!</div>`;
+        return;
+      }
+
+      container.innerHTML = state.notes.map(n => `
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">${escapeHtml(n.subject)}</span>
+            <div class="flex items-center gap-3">
+              <span class="text-[11px] text-slate-400">${escapeHtml(n.date)}</span>
+              <button onclick="deleteNote('${n.id}')" class="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline">Delete</button>
+            </div>
+          </div>
+          <h3 class="font-bold text-base">${escapeHtml(n.title)}</h3>
+          <div class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 whitespace-pre-wrap leading-relaxed max-h-60 overflow-y-auto">${escapeHtml(n.body)}</div>
+        </div>
+      `).join('');
+    }
+
+    // =========================================================================
+    // 10. INITIALIZE
+    // =========================================================================
+    applyTheme();
+    initTutorControls();
+    selectMockDuration(10);
+    switchTab('dashboard');
+    renderAll();
+    checkExamAlerts();
+  </script>
+</body>
+</html>
